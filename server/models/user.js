@@ -10,6 +10,7 @@ var User = db.Model.extend({
 	tableName: 'users',
   //if the section below looks very familiar... that's because it is
 	initialize: function(){
+    // hash password when new user is created
     this.on('creating', this.hashPassword);
   },
   comparePassword: function(attemptedPassword, callback) {

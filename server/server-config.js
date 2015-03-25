@@ -67,11 +67,15 @@ console.log(__dirname);
 // app.use('/api/users', userRouter);
 
 app.post('/api/users/signup', function(req, res, next){
+  console.log('req.body.username: ', req.body.username);
   //create new user session and database entry if username does not already exist
-  new User({username: req.body.username}).fetch()
+  new User({user_name: req.body.username}).fetch()
     .then(function(foundUser){
+      console.log('foundUser: ', foundUser);
       if (!foundUser){
-        new User({username: req.body.username, password: req.body.password}).save().then(function(newUser){
+        console.log('req.body.password: ', req.body.password);
+        new User({user_name: req.body.username, password: req.body.password}).save().then(function(newUser){
+          // regenerate session with new user
           req.session.regenerate(function() {
             req.session.user = newUser;
             res.redirect('/');
@@ -84,19 +88,25 @@ app.post('/api/users/signup', function(req, res, next){
 });
 
 app.post('/api/users/login', function(req, res, next){
+  console.log('REQ.BODY: ', req.body);
   //check username and password to log in
   var username = req.body.username;
   var password = req.body.password;
-  new User({username: username}).fetch().then(function(user){
+  new User({user_name: username}).fetch().then(function(user){
+    // if user does not exist, redirect to /
     if( !user ){
       res.redirect('/');
     } else {
+      // comparePassword() calls bcrypt.compare() on the provided password
+      // and passes the result (true or false) to the provided callback
       user.comparePassword(password, function(match){
+        // if password is correct, regenerate session with logged-in user
         if(match) {
           req.session.regenerate(function() {
             req.session.user = newUser;
             res.redirect('/');
           });
+        // else redirect to /
         } else {
           res.redirect('/')
         }
@@ -118,13 +128,21 @@ app.get('/api/users/checkbookmarklet', function(req, res, next){
   //check user session to let bookmarklet know if logged in or not
   var response = {};
   response.isAuthenticated = false;
+
+  // if req.session exists, set loggedIn to req.session.user cast as a boolean
+  // else set loggedIn to false
   var loggedIn = req.session ? !!req.session.user : false;
+
+  // if user is not logged in, send back false
   if (!loggedIn){
     res.send(response);
+  // else check if user exists
   } else {
-    new User({username: loggedIn.username}).fetch().then(function(user){
+    new User({user_name: loggedIn.username}).fetch().then(function(user){
+      // if user does not exist, send back false
       if (!user){
         res.send(response);
+      // else user does exist and is logged in -- send back true
       } else {
         response.isAuthenticated = true;
         res.send(response);
@@ -134,7 +152,9 @@ app.get('/api/users/checkbookmarklet', function(req, res, next){
 });
 
 //listing routes
+// grab all listings when a GET request is sent to /api/listings
 app.get('/api/listings', Controller.getListing);
+// save listing when a POST request is sent to /api/listings
 app.post('/api/listings', Controller.saveListing);
 
 /*=================== SET ROUTER DEPENDENCIES ==================*/

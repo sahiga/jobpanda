@@ -19,6 +19,11 @@ app.get('/app', function(req, res){
 	res.sendFile(__dirname + '/client/dist/index.html');
 });
 
+// get login page
+app.get('/login', function(req, res) {
+  res.sendFile(__dirname + '/client/dist/login.html');
+});
+
 app.listen(port);
 
 console.log('listening on port: ' + port);

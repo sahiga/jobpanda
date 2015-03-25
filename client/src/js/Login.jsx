@@ -34,7 +34,7 @@ var LoginFields = React.createClass({
 	}
 });
 
-var SubmitFields = React.createCLass({
+var SubmitFields = React.createClass({
 	render: function(){
 		return (
 			<FlatButton label="Submit" primary={true} />
