@@ -1,8 +1,8 @@
 /*================ REQUIRE DEPENDENCIES ================*/
 var db 				= require('../config/config'),
     JobUser   = require('./job_user'),
-    bcrypt    = require('bcrypt'),
     Promise   = require('bluebird'),
+    bcrypt    = require('bcrypt'),
     Listing 	= require('./listing');
 
 /*============== SET SCHEMA RELATIONSHIPS ==============*/
@@ -22,9 +22,11 @@ var User = db.Model.extend({
     var cipher = Promise.promisify(bcrypt.hash);
     // return a promise - bookshelf will wait for the promise
     // to resolve before completing the create action
-    return cipher(this.get('password'), null, null)
+    console.log('password inside of hashPassword: ', this.get('password'));
+    return cipher(this.get('password'), null)
       .bind(this)
       .then(function(hash) {
+        console.log('hash: ', hash);
         this.set('password', hash);
       });
   },

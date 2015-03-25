@@ -80,7 +80,7 @@ db.knex.schema.hasTable('companies').then(function(exists) {
 });
 
 //Initialize industries table if it doesn't already exist
-db.knex.schema.hasTable('industries').then(function(exists) {
+db.knex.schema.hasTable('ind ustries').then(function(exists) {
   if (!exists) {
     db.knex.schema.createTable('industries', function (industry) {
       industry.increments('id').primary();
